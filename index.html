@@ -1,0 +1,574 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Buy, Buy, Buy">
+<meta name="theme-color" content="#FFFFFF">
+<meta name="robots" content="noindex">
+<title>Buy, Buy, Buy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FFFFFF; --paper-2:#F3F4F6; --ink:#1E1C1A; --muted:#55524E; --rule:#E5E7EB; --divider:#B9BEC5;
+  --tomato:#D4421E; --tomato-ink:#fff; --green:#14543D; --green-bg:#E5F1EA; --ochre:#B7791F;
+  --display:'Barlow Condensed','Arial Narrow',sans-serif; --body:'IBM Plex Sans',-apple-system,Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:16px/1.45 var(--body)}
+body.noscroll{overflow:hidden}
+button{font:inherit;color:inherit}
+.wrap{max-width:720px;margin:0 auto;padding:0 16px}
+
+/* header */
+.top{position:sticky;top:0;z-index:5;background:var(--paper);border-bottom:2px solid var(--ink);
+  padding-top:max(12px,env(safe-area-inset-top))}
+.brandline{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.wordmark{font:700 28px/1 var(--display);letter-spacing:.01em;text-transform:uppercase;margin:0}
+.wordmark span{color:var(--tomato)}
+#asof{color:var(--muted);font-size:13px;text-align:right}
+.searchbox{position:relative;margin:10px 0 8px}
+.searchbox svg{position:absolute;left:12px;top:50%;transform:translateY(-50%);width:18px;height:18px;stroke:var(--muted)}
+#q{width:100%;font:16px var(--body);padding:11px 12px 11px 38px;border:2px solid var(--ink);border-radius:4px;
+  background:#fff;color:var(--ink);outline:none;-webkit-appearance:none}
+#q:focus{box-shadow:0 0 0 3px rgba(212,66,30,.18)}
+.stores{display:flex;gap:0;margin:0 0 12px;border:1.5px solid var(--ink);border-radius:4px;overflow-x:auto;width:max-content;max-width:100%;
+  scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.stores::-webkit-scrollbar{display:none}
+.stores button{border:0;background:transparent;padding:7px 14px;font-weight:600;font-size:14px;cursor:pointer;white-space:nowrap;flex:0 0 auto}
+.stores button+button{border-left:1.5px solid var(--ink)}
+.stores button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+
+/* sections */
+main{padding-bottom:56px}
+.sec{display:flex;align-items:baseline;gap:8px;margin:26px 0 2px;border-bottom:1px solid var(--ink);padding-bottom:4px}
+.sec h2{font:700 22px/1 var(--display);text-transform:uppercase;letter-spacing:.02em;margin:0}
+.sec .n{font:600 16px/1 var(--display);color:var(--muted)}
+.sec .why{margin-left:auto;color:var(--muted);font-size:13px;text-align:right}
+.grp{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:0;cursor:pointer;
+  border-bottom:2px solid var(--ink);margin:14px 0 0;padding:12px 2px 9px}
+.grp .gname{font:700 16px/1.1 var(--display);letter-spacing:.06em;text-transform:uppercase;color:var(--ink)}
+.grp .gmeta{margin-left:auto;color:var(--muted);font-size:14px;white-space:nowrap}
+.grp .gmeta b{color:var(--tomato)}
+.grp .chev{font-size:15px;transition:transform .15s;color:var(--ink)}
+.grp[aria-expanded="true"] .chev{transform:rotate(90deg)}
+.grp:focus-visible{outline:2px solid var(--tomato);outline-offset:2px}
+.secbody[hidden]{display:none}
+.note{color:var(--muted);font-size:14px;margin:10px 0}
+
+/* rows */
+.row{display:grid;grid-template-columns:1fr auto;gap:2px 14px;width:100%;text-align:left;background:none;border:0;
+  border-bottom:2px solid var(--divider);padding:15px 2px;cursor:pointer}
+.row:active{background:var(--paper-2)}
+.row:focus-visible{outline:2px solid var(--tomato);outline-offset:-2px}
+.add{display:inline-flex;align-items:center;justify-content:center;width:34px;height:30px;margin-top:8px;border:1.5px solid var(--ink);
+  border-radius:4px;background:#fff;font:600 20px/1 var(--body);cursor:pointer}
+.add.on{background:var(--ink);color:#fff;font-size:15px}
+.controls{display:flex;gap:8px;align-items:center;margin:0 0 12px}
+.controls .stores{margin:0;flex:0 1 auto;min-width:0}
+.listbtn{flex:0 0 auto;border:1.5px solid var(--ink);border-radius:4px;background:#fff;padding:7px 12px;font-weight:600;font-size:14px;cursor:pointer;white-space:nowrap}
+.listbtn[aria-pressed="true"]{background:var(--tomato);border-color:var(--tomato);color:#fff}
+.basket{border:2px solid var(--ink);border-radius:6px;padding:12px 14px;margin:16px 0 6px;background:#fff}
+.basket .big{display:flex;justify-content:space-between;align-items:baseline;font:700 20px/1.2 var(--display);text-transform:uppercase;letter-spacing:.02em}
+.basket .big b{font:700 26px/1 var(--body)}
+.basket .line{color:var(--muted);font-size:14px;margin-top:6px}
+.basket .line b{color:var(--ink)}
+.li{border-bottom:2px solid var(--divider);padding:12px 2px}
+.li-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.qty{display:flex;align-items:center;gap:6px;white-space:nowrap}
+.qty button{width:30px;height:30px;border:1.5px solid var(--ink);border-radius:4px;background:#fff;font-size:17px;cursor:pointer}
+.qty span{min-width:18px;text-align:center;font-weight:600}
+.opts{width:100%;border-collapse:collapse;margin-top:8px;font-size:14px}
+.opts td{padding:6px 4px;border-top:1px solid var(--rule);vertical-align:top}
+.opts td:first-child{font-weight:600;white-space:nowrap;width:1%}
+.opts td:last-child{text-align:right;font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums}
+.opts .what{color:var(--muted)}
+.opts tr[data-i]{cursor:pointer}
+.opts tr.best td{background:var(--green-bg)}
+.opts tr.best td:first-child{color:var(--green)}
+.opts tr.none td{color:var(--muted);font-weight:400}
+.addbig{margin-top:12px;width:100%;padding:11px;border:2px solid var(--ink);border-radius:4px;background:var(--ink);color:#fff;font-weight:600;font-size:15px;cursor:pointer}
+.addbig.on{background:#fff;color:var(--ink)}
+.linkish{border:0;background:none;color:var(--muted);text-decoration:underline;font-size:14px;padding:12px 0;cursor:pointer}
+.name{font-weight:600;font-size:16.5px;line-height:1.3}
+.size{font-weight:400;color:var(--muted)}
+.meta{color:var(--muted);font-size:14px;font-weight:500;margin-top:3px}
+.kinds{color:var(--muted);font-size:14px;margin-top:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px;align-items:center}
+.save{font:700 17px/1 var(--display);background:var(--tomato);color:var(--tomato-ink);padding:4px 7px 3px;border-radius:2px;letter-spacing:.02em}
+.save.soft{background:transparent;color:var(--ink);border:1.5px solid var(--ink);padding:3px 6px 2px}
+.save.up{background:transparent;color:var(--muted);border:1.5px solid var(--rule);padding:3px 6px 2px}
+.low{font-size:13px;font-weight:600;color:var(--green);background:var(--green-bg);padding:3px 8px;border-radius:2px}
+.new{font-size:13px;color:var(--muted);background:var(--paper-2);padding:3px 8px;border-radius:2px}
+.count{font-size:13px;font-weight:600;color:var(--ink);border:1.5px solid var(--divider);padding:2px 7px;border-radius:2px}
+.price{text-align:right;white-space:nowrap;align-self:start}
+.now{font:700 23px/1.1 var(--body);letter-spacing:-.01em;font-variant-numeric:tabular-nums}
+.cheapest{font-weight:600;color:var(--green);font-size:14px;margin-top:3px}
+.usual{color:var(--muted);font-size:14px;font-weight:500;margin-top:4px}
+.sub{border-left:3px solid var(--divider);margin:0 0 0 6px;padding-left:10px;border-bottom:2px solid var(--divider)}
+.sub .row{padding:10px 2px;border-bottom:1px solid var(--rule)}
+.sub .row:last-child{border-bottom:0}
+.sub .now{font-size:19px}
+.sub[hidden]{display:none}
+
+/* sheet */
+.sheet{position:fixed;inset:0;z-index:20;background:rgba(30,28,26,.42);display:flex;align-items:flex-end;justify-content:center}
+.sheet[hidden]{display:none}
+.card{position:relative;background:var(--paper);width:100%;max-width:640px;max-height:92vh;overflow:auto;
+  border-top:3px solid var(--ink);border-radius:10px 10px 0 0;padding:18px 16px max(22px,env(safe-area-inset-bottom))}
+@media (min-width:700px){.sheet{align-items:center}.card{border-radius:6px;border:2px solid var(--ink)}}
+#close{position:absolute;top:10px;right:10px;border:1.5px solid var(--ink);background:var(--paper);border-radius:4px;
+  width:34px;height:34px;font-size:20px;line-height:1;cursor:pointer}
+#d-name{font-weight:600;font-size:18px;margin:0 46px 2px 0;line-height:1.3}
+.headline{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin:12px 0 4px}
+.headline .now{font-size:34px}
+.facts{width:100%;border-collapse:collapse;margin:10px 0 4px;font-size:15px}
+.facts td{padding:7px 0;border-bottom:1px solid var(--rule)}
+.facts td:last-child{text-align:right;font-weight:600;font-variant-numeric:tabular-nums}
+.others{margin-top:14px;padding-top:12px;border-top:2px solid var(--ink)}
+.othh{font:700 18px/1 var(--display);text-transform:uppercase;letter-spacing:.02em;margin:0 0 6px}
+#d-chart{height:250px;margin:6px -6px 0}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="brandline"><h1 class="wordmark">Buy<span>,</span> Buy<span>,</span> Buy</h1><div id="asof"></div></div>
+    <div class="searchbox">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 21 21"/></svg>
+      <input id="q" type="search" placeholder="Search any product" autocomplete="off"
+             autocapitalize="none" enterkeyhint="search" aria-label="Search products">
+    </div>
+    <div class="controls">
+      <div class="stores" role="group" aria-label="Store" id="stores"></div>
+      <button id="listbtn" class="listbtn" aria-pressed="false">List · <span id="listn">0</span></button>
+    </div>
+  </div>
+</header>
+<main class="wrap">
+  <p id="status" class="note">Loading prices…</p>
+  <section id="results" hidden></section>
+  <section id="deals"></section>
+  <section id="listview" hidden></section>
+  <p class="note">“Usually” is the average price over the last 12 months, across Woolworths and Coles when both sell it. Updated Sat 14 Nov, 07:46.</p>
+</main>
+<div id="sheet" class="sheet" hidden>
+  <div class="card" role="dialog" aria-modal="true" aria-labelledby="d-name">
+    <button id="close" aria-label="Close">×</button>
+    <h2 id="d-name"></h2>
+    <div id="d-meta" class="meta"></div>
+    <div class="headline"><div id="d-tags" class="tags"></div><div class="price"><div id="d-now" class="now"></div></div></div>
+    <table class="facts"><tbody id="d-facts"></tbody></table>
+    <button id="d-add" class="addbig"></button>
+    <div id="d-chart"></div>
+    <div class="others">
+      <h3 class="othh">At other stores</h3>
+      <table class="opts"><tbody id="d-others"></tbody></table>
+    </div>
+  </div>
+</div>
+<script src="https://cdn.plot.ly/plotly-basic-4.1.1.min.js"></script>
+<script>window.TEMPLATE = {"layout": {"colorway": ["#329464", "#D9C752", "#38A4C0", "#D19738", "#4162C4", "#14D8A7", "#F1900E", "#DF97AB", "#4E2A0B", "#233A24", "#ACE782", "#B97E69", "#10E781"], "font": {"color": "#2B669B", "family": "IBM Plex Sans, sans-serif", "size": 14}, "hoverlabel": {"font": {"family": "IBM Plex Sans, sans-serif", "size": 12}}, "legend": {"bgcolor": "rgba(0,0,0,0)", "font": {"color": "#2B669B", "size": 14}, "orientation": "h", "x": 0.5, "xanchor": "center", "y": -0.2}, "margin": {"b": 150, "l": 60, "r": 60, "t": 100}, "paper_bgcolor": "#FFFFFF", "plot_bgcolor": "#FFFFFF", "polar": {"angularaxis": {"gridcolor": "rgba(43, 102, 154, 0.2)", "linecolor": "rgba(43, 102, 154, 0.4)", "tickfont": {"color": "#2B669B"}}, "radialaxis": {"gridcolor": "rgba(43, 102, 154, 0.2)", "linecolor": "rgba(43, 102, 154, 0.4)", "tickfont": {"color": "#2B669B"}}}, "title": {"font": {"color": "#2B669B", "size": 16}, "pad": {"b": 100, "t": 10}, "x": 0.075, "xanchor": "left", "y": 1.0, "yanchor": "top"}, "xaxis": {"automargin": true, "gridcolor": "rgba(43, 102, 154, 0.2)", "linecolor": "rgba(43, 102, 154, 0.2)", "linewidth": 1, "mirror": true, "showgrid": true, "showline": true, "title": {"font": {"color": "#2B669B", "size": 16}}, "zeroline": true, "zerolinecolor": "rgba(43, 102, 154, 0.6)"}, "yaxis": {"gridcolor": "rgba(43, 102, 154, 0.2)", "linecolor": "rgba(43, 102, 154, 0.2)", "linewidth": 1, "mirror": true, "showgrid": true, "showline": true, "title": {"font": {"color": "#2B669B", "size": 16}}, "zeroline": true, "zerolinecolor": "rgba(43, 102, 154, 0.6)"}}};</script>
+<script type="module">
+import { judge, money } from "./verdict.js";
+import { basket, equivalents, makeIndex, STORES as LIST_STORES } from "./basket.js";
+
+const $ = (id) => document.getElementById(id);
+const STORE = { woolworths: "Woolworths", coles: "Coles", aldi: "ALDI", piedimontes: "Piedimonte's" };
+const DAY = 86400000;
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const norm = (s) => s.toLowerCase().replace(/&/g, " and ").replace(/[^a-z0-9.%]+/g, " ").trim();
+// "4000ml" <-> "4l", "1000g" <-> "1kg", so either spelling finds products from both stores.
+const altSize = (s) => {
+  const m = /^(\d+(?:\.\d+)?)\s*(ml|g|l|kg)$/i.exec(s.trim());
+  if (!m) return "";
+  const v = +m[1], u = m[2].toLowerCase();
+  if (u === "ml" && v >= 1000) return `${v / 1000}l`;
+  if (u === "g" && v >= 1000) return `${v / 1000}kg`;
+  if (u === "l") return `${v * 1000}ml`;
+  if (u === "kg") return `${v * 1000}g`;
+  return "";
+};
+const utc = (iso) => { const [y, m, d] = iso.split("-").map(Number); return Date.UTC(y, m - 1, d); };
+const fmtDate = (ms) => new Date(ms).toLocaleDateString("en-AU", { weekday: "short", day: "numeric", month: "short", timeZone: "UTC" });
+const unitText = (u) => u.replace(" / ", "/").replace(/\/(\d*)([A-Z]+)/, (_, n, s) => "/" + n + s.toLowerCase());
+const store = { get() { try { return localStorage.getItem("dh-store") || "all"; } catch { return "all"; } },
+                set(v) { try { localStorage.setItem("dh-store", v); } catch {} } };
+let D = null, P = [], M = new Map(), KEY = new Map(), IDX = new Map(), cur = null, where = store.get(), listOpen = false;
+// Shopping list, saved on this phone only: [{k: "store:id", q: qty}]
+const saved = { get() { try { return JSON.parse(localStorage.getItem("bbb-list") || "[]"); } catch { return []; } },
+                set(v) { try { localStorage.setItem("bbb-list", JSON.stringify(v)); } catch {} } };
+let items = saved.get();
+const keyOf = (p) => `${p.store}:${p.id}`;
+const inList = (p) => items.find((x) => x.k === keyOf(p));
+
+async function load() {
+  try {
+    D = await (await fetch("data/products.json", { cache: "no-cache" })).json();
+  } catch (e) {
+    $("status").textContent = "Couldn't load prices. Check your connection and reload.";
+    return;
+  }
+  const c = Object.fromEntries(D.cols.map((k, i) => [k, i]));
+  P = D.products.map((r, i) => ({
+    i, store: D.stores[r[c.store]], id: r[c.id], name: r[c.name], size: r[c.size], price: r[c.price],
+    typical: r[c.typical], low: r[c.low], days: r[c.days], deal: !!r[c.strength],
+    group: r[c.group] >= 0 ? D.groups[r[c.group]] : null, unit: r[c.unit], hist: r[c.hist], brand: r[c.brand] || "",
+    match: c.match === undefined ? -1 : r[c.match],
+    sub: c.sub === undefined ? -1 : r[c.sub], qty: r[c.qty] ?? null, qunit: r[c.qunit] ?? null, up: r[c.up] ?? null, um: r[c.um] ?? null,
+    basis: r[c.basis] || "",
+  }));
+  KEY = new Map(P.map((p) => [keyOf(p), p]));
+  M = new Map();  // match id -> same product at each store
+  for (const p of P) if (p.match >= 0) { if (!M.has(p.match)) M.set(p.match, []); M.get(p.match).push(p); }
+  for (const p of P) {
+    p.n = norm(`${p.name} ${p.size} ${altSize(p.size)}`);
+    p.atLow = judge(p.price, p.typical, p.low, p.days, D.rules).nearLow;
+  }
+  const days = Object.values(D.asOf).map(utc).sort(), short = (ms) => new Date(ms).toLocaleDateString("en-AU", { day: "numeric", month: "short", timeZone: "UTC" });
+  $("asof").textContent = "Prices " + (days[0] === days[days.length - 1] ? short(days[0]) : `${short(days[0]).split(" ")[0]}–${short(days[days.length - 1])}`);
+  $("asof").title = Object.entries(D.asOf).map(([s, d]) => `${STORE[s]} ${fmtDate(utc(d))}`).join("\n");
+  const present = D.stores.filter((s) => P.some((p) => p.store === s));
+  $("stores").innerHTML = ["all", ...present].map((s) =>
+    `<button data-store="${s}" aria-pressed="false">${s === "all" ? "All" : STORE[s]}</button>`).join("");
+  document.querySelectorAll(".stores button").forEach((b) => b.addEventListener("click", () => setStore(b.dataset.store)));
+  if (where !== "all" && !present.includes(where)) where = "all";
+  IDX = makeIndex(P);
+  $("listn").textContent = items.length;
+  $("status").hidden = true;
+  setStore(where);
+}
+
+// ---- store filter
+function setStore(v) {
+  where = v; store.set(v);
+  document.querySelectorAll(".stores button").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.store === v)));
+  if (!D) return;
+  renderDeals();
+  search();
+}
+const here = (p) => where === "all" || p.store === where;
+
+// ---- rows
+function tags(p) {
+  if (p.days < D.rules.min_history_days) return '<span class="new">Too new to judge</span>';
+  const pct = p.typical ? 1 - p.price / p.typical : 0;
+  let t = "";
+  if (pct >= 0.005) t += `<span class="save${p.deal ? "" : " soft"}">−${Math.round(pct * 100)}%</span>`;
+  else if (pct <= -0.005) t += `<span class="save up">+${Math.round(-pct * 100)}%</span>`;
+  if (p.atLow) t += '<span class="low">Lowest in 12 months</span>';
+  return t;
+}
+const usualLine = (p) => p.days < D.rules.min_history_days ? "" : `usually ${money(p.typical)}`;
+const sizeTag = (p) => p.size && !p.name.toLowerCase().endsWith(p.size.toLowerCase()) ? ` <span class="size">${esc(p.size)}</span>` : "";
+const metaLine = (p) => [STORE[p.store], p.unit ? unitText(p.unit) : ""].filter(Boolean).join(" · ");
+
+const addBtn = (p) => `<button class="add${inList(p) ? " on" : ""}" data-add="${p.i}" aria-label="Add ${esc(p.name)} to shopping list">${inList(p) ? "✓" : "+"}</button>`;
+function row(p) {
+  return `<div class="row" role="button" tabindex="0" data-i="${p.i}"><div><div class="name">${esc(p.name)}${sizeTag(p)}</div>`
+    + `<div class="meta">${esc(metaLine(p))}</div><div class="tags">${tags(p)}</div></div>`
+    + `<div class="price"><div class="now">${money(p.price)}</div><div class="usual">${usualLine(p)}</div>${addBtn(p)}</div></div>`;
+}
+
+// Same brand, store, size, price and usual price => one row ("La Molisana pasta 500g, 6 kinds").
+function bundle(list) {
+  const groups = new Map();
+  for (const p of list) {
+    const k = p.brand ? [p.store, p.brand.toLowerCase(), p.size.toLowerCase(), p.price, p.typical, p.group || ""].join("|") : `#${p.i}`;
+    if (!groups.has(k)) groups.set(k, []);
+    groups.get(k).push(p);
+  }
+  return [...groups.values()];
+}
+function bundleTitle(ps) {
+  const toks = ps.map((p) => p.name.split(/\s+/));
+  const same = (a, b) => a !== undefined && b !== undefined && a.toLowerCase() === b.toLowerCase();
+  let pre = 0;
+  while (toks.every((t) => same(t[pre], toks[0][pre]))) pre++;
+  let suf = 0;
+  while (toks.every((t) => t.length - 1 - suf >= pre && same(t[t.length - 1 - suf], toks[0][toks[0].length - 1 - suf]))) suf++;
+  const title = [...toks[0].slice(0, pre), ...(suf ? toks[0].slice(-suf) : [])].join(" ") || ps[0].brand;
+  const kinds = toks.map((t) => t.slice(pre, t.length - suf).join(" ")).filter(Boolean);
+  return { title, kinds };
+}
+function rows(list) {
+  return bundle(list).map((ps) => {
+    if (ps.length === 1) return row(ps[0]);
+    const p = ps[0], { title, kinds } = bundleTitle(ps), id = `b${p.i}`;
+    return `<div class="row" role="button" tabindex="0" data-bundle="${id}" aria-expanded="false"><div><div class="name">${esc(title)}${sizeTag({ ...p, name: title })}</div>`
+      + `<div class="kinds">${esc(kinds.join(" · "))}</div><div class="meta">${esc(metaLine(p))}</div>`
+      + `<div class="tags">${tags(p)}<span class="count">${ps.length} kinds ▾</span></div></div>`
+      + `<div class="price"><div class="now">${money(p.price)}</div><div class="usual">${usualLine(p)}</div></div></div>`
+      + `<div class="sub" id="${id}" hidden>${ps.map(row).join("")}</div>`;
+  }).join("");
+}
+
+// The same product at several stores: one row saying where it's cheapest; expands to each store.
+function compareRow(ps) {
+  ps = [...ps].sort((a, b) => a.price - b.price);
+  const best = ps[0], cheapest = ps.filter((p) => p.price === best.price).map((p) => STORE[p.store]);
+  const others = ps.filter((p) => p.price !== best.price).map((p) => `${STORE[p.store]} ${money(p.price)}`);
+  const id = `m${best.match}`;
+  return `<div class="row" role="button" tabindex="0" data-bundle="${id}" aria-expanded="false"><div><div class="name">${esc(best.name)}${sizeTag(best)}</div>`
+    + `<div class="cheapest">Cheapest at ${esc(cheapest.join(" & "))}</div>`
+    + (others.length ? `<div class="meta">${esc(others.join(" · "))}</div>` : `<div class="meta">Same price at ${ps.length} stores</div>`)
+    + `<div class="tags">${tags(best)}<span class="count">${ps.length} stores ▾</span></div></div>`
+    + `<div class="price"><div class="now">${money(best.price)}</div><div class="usual">${usualLine(best)}</div></div></div>`
+    + `<div class="sub" id="${id}" hidden>${ps.map(row).join("")}</div>`;
+}
+function searchRows(hits) {
+  if (where !== "all") return rows(hits);
+  const html = [], done = new Set();
+  let run = [];  // consecutive unmatched results, bundled as elsewhere
+  const flush = () => { if (run.length) { html.push(rows(run)); run = []; } };
+  for (const p of hits) {
+    const twins = p.match >= 0 ? M.get(p.match) : null;
+    if (twins && twins.length > 1) {
+      flush();
+      if (!done.has(p.match)) { done.add(p.match); html.push(compareRow(twins)); }
+    } else run.push(p);
+  }
+  flush();
+  return html.join("");
+}
+
+function section(title, n, why) {
+  return `<div class="sec"><h2>${title}</h2><span class="n">${n}</span>${why ? `<span class="why">${esc(why)}</span>` : ""}</div>`;
+}
+// Deal groups start collapsed; ones you open stay open while you switch stores.
+const openSecs = new Set();
+function collapsible(key, title, ps) {
+  const best = Math.max(...ps.map((p) => (p.typical ? 1 - p.price / p.typical : 0)));
+  const id = `sec-${[...key].reduce((a, ch) => (a * 31 + ch.charCodeAt(0)) >>> 0, 7)}`, open = openSecs.has(key);
+  return `<button class="grp" data-sec="${id}" data-key="${esc(key)}" aria-expanded="${open}" aria-controls="${id}">`
+    + `<span class="chev">▸</span><span class="gname">${esc(title)}</span>`
+    + `<span class="gmeta">${ps.length} deal${ps.length > 1 ? "s" : ""}${best >= 0.005 ? ` · up to <b>−${Math.round(best * 100)}%</b>` : ""}</span></button>`
+    + `<div class="secbody" id="${id}"${open ? "" : " hidden"}>${rows(ps)}</div>`;
+}
+function renderDeals() {
+  const list = D.deals.list.map((i) => P[i]).filter(here), hot = D.deals.hot.map((i) => P[i]).filter(here);
+  let h = section("Your deals", list.length);
+  if (!list.length) h += '<p class="note">No big deals on your items today.</p>';
+  const byGroup = new Map();
+  for (const p of list) { if (!byGroup.has(p.group)) byGroup.set(p.group, []); byGroup.get(p.group).push(p); }
+  for (const [g, ps] of byGroup) h += collapsible(g, g, ps);
+  h += section("Hot deals", hot.length, D.hot_rule);
+  h += hot.length ? collapsible("__hot", "Everything else", hot) : '<p class="note">None today.</p>';
+  $("deals").innerHTML = h;
+}
+
+// ---- search
+let timer;
+$("q").addEventListener("input", () => { if (listOpen) toggleList(false); clearTimeout(timer); timer = setTimeout(search, 120); });
+function search() {
+  if (!D || listOpen) return;
+  const toks = norm($("q").value).split(" ").filter(Boolean);
+  if (!toks.length) { $("results").hidden = true; $("deals").hidden = false; return; }
+  let hits = P.filter((p) => here(p) && toks.every((t) => p.n.includes(t)));
+  if (where === "all") {  // a hit at one store brings in the same product at the others
+    const seen = new Set(hits.map((p) => p.i));
+    for (const p of [...hits]) if (p.match >= 0) for (const q of M.get(p.match)) if (!seen.has(q.i)) { seen.add(q.i); hits.push(q); }
+  }
+  const starts = (p) => (p.n.startsWith(toks[0]) ? 0 : 1);
+  hits.sort((a, b) => (!!b.group - !!a.group) || (starts(a) - starts(b)) || (a.n.length - b.n.length));
+  const n = hits.length;
+  $("results").innerHTML = section("Results", n, n > 60 ? "showing 60" : "")
+    + (n ? searchRows(hits.slice(0, 60)) : '<p class="note">No matches. Try fewer or shorter words.</p>');
+  $("results").hidden = false;
+  $("deals").hidden = true;
+}
+
+// ---- interactions
+document.addEventListener("click", (e) => {
+  const sec = e.target.closest("[data-sec]");
+  if (sec) {
+    const body = $(sec.dataset.sec), open = body.hidden;
+    body.hidden = !open;
+    sec.setAttribute("aria-expanded", String(open));
+    if (open) openSecs.add(sec.dataset.key); else openSecs.delete(sec.dataset.key);
+    return;
+  }
+  const add = e.target.closest("[data-add]");
+  if (add) { addToList(P[+add.dataset.add]); return; }
+  const ctl = e.target.closest("[data-inc],[data-dec],[data-del]");
+  if (ctl) { changeQty(ctl.dataset.inc || ctl.dataset.dec || ctl.dataset.del, ctl.dataset.inc ? 1 : ctl.dataset.dec ? -1 : -Infinity); return; }
+  const opt = e.target.closest(".opts tr[data-i]");
+  if (opt) { openSheet(P[+opt.dataset.i]); return; }
+  const b = e.target.closest(".row");
+  if (!b) return;
+  if (b.dataset.bundle) {
+    const sub = $(b.dataset.bundle), open = sub.hidden;
+    sub.hidden = !open;
+    b.setAttribute("aria-expanded", String(open));
+    b.querySelector(".count").textContent = b.querySelector(".count").textContent.replace(/[▾▴]/, open ? "▴" : "▾");
+  } else {
+    openSheet(P[+b.dataset.i]);
+  }
+});
+
+addEventListener("keydown", (e) => {
+  const r = e.target.closest && e.target.closest(".row[role=button]");
+  if (r && e.target === r && (e.key === "Enter" || e.key === " ")) { e.preventDefault(); r.click(); }
+});
+
+// ---- shopping list
+function saveList() {
+  saved.set(items);
+  $("listn").textContent = items.length;
+  document.querySelectorAll("[data-add]").forEach((b) => {
+    const on = !!inList(P[+b.dataset.add]);
+    b.classList.toggle("on", on); b.textContent = on ? "✓" : "+";
+  });
+  if (cur) sheetAddLabel();
+  if (listOpen) renderList();
+}
+function addToList(p) {
+  const it = inList(p);
+  if (it) it.q += 1; else items.push({ k: keyOf(p), q: 1 });
+  saveList();
+}
+function changeQty(k, d) {
+  const it = items.find((x) => x.k === k);
+  if (!it) return;
+  it.q += d;
+  if (!(it.q > 0)) items = items.filter((x) => x.k !== k);
+  saveList();
+}
+function toggleList(open = !listOpen) {
+  listOpen = open;
+  $("listbtn").setAttribute("aria-pressed", String(open));
+  $("listview").hidden = !open;
+  if (open) { $("results").hidden = true; $("deals").hidden = true; renderList(); }
+  else search();
+}
+$("listbtn").addEventListener("click", () => toggleList());
+
+const KIND = { chosen: "this one", same: "same product", similar: "similar" };
+function renderList() {
+  if (!D) return;
+  const lines = items.map((x) => ({ k: x.k, item: KEY.get(x.k), qty: x.q }));
+  const ok = lines.filter((l) => l.item), gone = lines.filter((l) => !l.item);
+  let h = `<div class="sec"><h2>Shopping list</h2><span class="n">${items.length}</span></div>`;
+  if (!items.length) {
+    $("listview").innerHTML = h + '<p class="note">Your list is empty. Tap <b>+</b> on any product to add it, then come back here to see where it\'s cheapest.</p>';
+    return;
+  }
+  const b = basket(ok, M, IDX, LIST_STORES);
+  const by = LIST_STORES.filter((s) => b.split.byStore[s].n).map((s) => `${STORE[s]} · ${b.split.byStore[s].n} item${b.split.byStore[s].n > 1 ? "s" : ""} <b>${money(b.split.byStore[s].sum)}</b>`);
+  const one = LIST_STORES.map((s) => `${STORE[s]} <b>${money(b.totals[s].sum)}</b>${b.totals[s].n < ok.length ? ` (${b.totals[s].n} of ${ok.length})` : ""}`);
+  h += `<div class="basket"><div class="big">Cheapest split <b>${money(b.split.sum)}</b></div>`
+    + `<div class="line">${by.join(" &nbsp;·&nbsp; ")}</div>`
+    + `<div class="line">All at one store: ${one.join(" · ")}</div></div>`;
+  for (const r of b.rows) {
+    const p = r.item, k = keyOf(p);
+    h += `<div class="li"><div class="li-top"><div class="name">${esc(p.name)}${sizeTag(p)}</div>`
+      + `<div class="qty"><button data-dec="${k}" aria-label="One less">−</button><span>${r.qty}</span>`
+      + `<button data-inc="${k}" aria-label="One more">+</button><button data-del="${k}" aria-label="Remove">✕</button></div></div>`
+      + `<table class="opts"><tbody>`;
+    for (const s of LIST_STORES) {
+      const o = r.options[s];
+      if (!o) { h += `<tr class="none"><td>${STORE[s]}</td><td>no comparable product</td><td></td></tr>`; continue; }
+      const what = o.kind === "similar" ? `similar: ${esc(o.p.name)}${o.scaled ? ` <span class="what">(${money(o.p.price)} for ${esc(o.p.size || "")}; ≈ for your size)</span>` : ""}`
+        : `<span class="what">${KIND[o.kind]}</span>`;
+      h += `<tr data-i="${o.p.i}"${s === r.cheapest ? ' class="best"' : ""}><td>${STORE[s]}</td><td>${what}</td>`
+        + `<td>${o.scaled ? "≈ " : ""}${money(o.cost * r.qty)}${r.qty > 1 ? `<div class="what">${money(o.cost)} each</div>` : ""}</td></tr>`;
+    }
+    h += `</tbody></table></div>`;
+  }
+  for (const l of gone) h += `<div class="li"><div class="li-top"><div class="note">An item is no longer listed by its store.</div><div class="qty"><button data-del="${l.k}" aria-label="Remove">✕</button></div></div></div>`;
+  h += `<button class="linkish" id="clearlist">Clear list</button>`;
+  $("listview").innerHTML = h;
+  $("clearlist").addEventListener("click", () => { items = []; saveList(); });
+}
+
+function sheetAddLabel() {
+  const it = inList(cur);
+  $("d-add").classList.toggle("on", !!it);
+  $("d-add").textContent = it ? `✓ On your shopping list (${it.q}) · add another` : "+ Add to shopping list";
+}
+$("d-add").addEventListener("click", () => { if (cur) addToList(cur); });
+
+function openSheet(p) {
+  cur = p;
+  $("d-name").textContent = p.name;
+  $("d-meta").textContent = [STORE[p.store], p.size, p.unit ? unitText(p.unit) : "", p.group ? `on your list: ${p.group}` : ""].filter(Boolean).join(" · ");
+  $("d-now").textContent = money(p.price);
+  $("d-tags").innerHTML = tags(p);
+  const fact = (k, v) => `<tr><td>${k}</td><td>${v}</td></tr>`;
+  const pooled = p.basis.includes("+") ? " · Woolworths & Coles" : "";
+  $("d-facts").innerHTML = fact(`Usual price (12-month average${pooled})`, money(p.typical))
+    + fact(`Lowest in the last 12 months${pooled}`, money(p.low)) + fact(`Price history${pooled ? " (incl. Woolworths & Coles)" : ""}`, `${p.days} days`);
+  renderOthers(p);
+  sheetAddLabel();
+  if ($("sheet").hidden) history.pushState({ sheet: 1 }, "");
+  $("sheet").hidden = false;
+  document.body.classList.add("noscroll");
+  update();
+}
+function closeSheet() { $("sheet").hidden = true; document.body.classList.remove("noscroll"); cur = null; }
+$("close").addEventListener("click", () => history.back());
+$("sheet").addEventListener("click", (e) => { if (e.target === $("sheet")) history.back(); });
+addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("sheet").hidden) history.back(); });
+addEventListener("popstate", () => { if (!$("sheet").hidden) closeSheet(); });
+
+function update() { draw(cur); }
+
+// Same (or similar) product at the other stores, cheapest highlighted.
+function renderOthers(p) {
+  const stores = D.stores.filter((s) => P.some((q) => q.store === s));
+  const eq = equivalents(p, M, IDX, stores);
+  const best = Object.entries(eq).sort((a, b) => a[1].cost - b[1].cost)[0]?.[0];
+  let h = "";
+  for (const s of stores) {
+    if (s === p.store) continue;
+    const o = eq[s];
+    if (!o) { h += `<tr class="none"><td>${STORE[s]}</td><td>not sold, or nothing comparable</td><td></td></tr>`; continue; }
+    const what = o.kind === "same" ? '<span class="what">same product</span>'
+      : `similar: ${esc(o.p.name)}${o.p.size && !o.p.name.toLowerCase().endsWith(o.p.size.toLowerCase()) ? ` <span class="what">${esc(o.p.size)}</span>` : ""}`;
+    const price = o.scaled ? `${money(o.p.price)}<div class="what">≈ ${money(o.cost)} for this size</div>` : money(o.p.price);
+    h += `<tr data-i="${o.p.i}"${s === best ? ' class="best"' : ""}><td>${STORE[s]}</td><td>${what}</td><td>${price}</td></tr>`;
+  }
+  if (best === p.store) h = `<tr class="best"><td>${STORE[p.store]}</td><td><span class="what">this one is the cheapest</span></td><td>${money(p.price)}</td></tr>` + h;
+  $("d-others").innerHTML = h;
+}
+
+// Chart styled to match the page (ODSL template underneath, page colours/fonts on top).
+const CH = { ink: "#1E1C1A", muted: "#55524E", grid: "#E9EBEE", usual: "#7A7F87", low: "#14543D", deal: "#D4421E" };
+function draw(p) {
+  const base = utc(D.base), x = [], y = [];
+  for (let k = 0; k < p.hist.length; k += 2) {
+    x.push(new Date(base + p.hist[k] * DAY).toISOString().slice(0, 10));
+    y.push(p.hist[k + 1] / 100);
+  }
+  const lines = [[p.typical, CH.usual, "dash", `usually ${money(p.typical)}`, "bottom"],
+                 [p.low, CH.low, "dot", `12-mo low ${money(p.low)}`, "top"]];
+  const axis = { gridcolor: CH.grid, zeroline: false, mirror: false, tickfont: { color: CH.muted, size: 12 }, linecolor: CH.ink, ticks: "" };
+  const layout = {
+    template: window.TEMPLATE, height: 250, autosize: true, showlegend: false,
+    font: { family: "IBM Plex Sans, -apple-system, Helvetica, Arial, sans-serif", color: CH.ink, size: 12 },
+    paper_bgcolor: "rgba(0,0,0,0)", plot_bgcolor: "rgba(0,0,0,0)",
+    margin: { l: 48, r: 12, t: 8, b: 30 },
+    xaxis: { ...axis, showline: true, linewidth: 1.5, tickformat: "%b", dtick: "M2", showgrid: false },
+    yaxis: { ...axis, showline: false, tickprefix: "$", nticks: 5 },
+    shapes: lines.map(([v, color, dash]) => ({ type: "line", xref: "paper", x0: 0, x1: 1, y0: v, y1: v, line: { color, dash, width: 1.6 } })),
+    annotations: lines.map(([v, color, , text, pos]) => ({ xref: "paper", x: 0.01, y: v, xanchor: "left", yanchor: pos, text,
+      showarrow: false, bgcolor: "rgba(255,255,255,.85)", borderpad: 2, font: { size: 12, color, family: "IBM Plex Sans, sans-serif" } })),
+  };
+  const traces = [
+    { x, y, mode: "lines", line: { shape: "hv", color: "#33312E", width: 1.8 }, hovertemplate: "%{x|%d %b %Y}: $%{y:.2f}<extra></extra>" },
+    { x: [x[x.length - 1]], y: [y[y.length - 1]], mode: "markers", hoverinfo: "skip",
+      marker: { size: 9, color: p.deal ? CH.deal : CH.ink, line: { color: "#fff", width: 2 } } },
+  ];
+  Plotly.react("d-chart", traces, layout, { displayModeBar: false, responsive: true });
+}
+
+const q0 = new URLSearchParams(location.search).get("q");  // e.g. ?q=olive+oil (bookmarkable searches)
+if (q0) $("q").value = q0;
+load();
+</script>
+</body>
+</html>
